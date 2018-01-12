@@ -1,11 +1,12 @@
 require('dotenv').config();
-const express = require('express')
+const express = require('express') // Express is the standard framework for Node.js. It was designed for building web applications an APIs.
     , bodyParser = require('body-parser')
     , session = require('express-session')
-    , passport = require('passport')
+    , passport = require('passport')    // Passport is Express-compatible authentication middleware for Node.js. Passport's sole purpose is to authenticate requests, which it does through an extensible set of plugins known as strategies.
     , Auth0Strategy = require('passport-auth0')
     , massive = require('massive');
 
+// Auth0 Strategies. This app will use Google to authenticate users.
 const {
     AUTH_DOMAIN,
     AUTH_CLIENT_ID,
@@ -27,7 +28,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 massive(CONNECTION_STRING).then((db) => {
-    app.set('db', db) // Add a key of 'db' and set the value to db.
+    app.set('db', db) // Add a key of 'db' and set the value to db. Use app.get('db') whenever you want to connect to the database.
 })
 
 //Creating a new Auth0 Object
@@ -45,7 +46,7 @@ passport.use(new Auth0Strategy({
     let { displayName, user_id, picture } = profile;
     const db = app.get('db'); // Retrieveing the database connection.
     // Massive converts database info into functions.
-    db.find_user([user_id]).then(function (user) {
+    db.find_user([user_id]).then(function (user) {  // The then() method returns a Promise. It takes up to two arguments: callback functions for the success and failure cases of the Promise.
         if (!user[0]) { //If no user exist with that id, then create user in database.
             db.create_user([
                 displayName,
